@@ -142,6 +142,10 @@ ipcMain.on("CSSEditr", () => {
         },
     });
     CSSEditrWin.loadFile(`${__dirname}/CSSEditr/index.html`);
+    CSSEditrWin.on('closed', () => {
+        app.quit();
+    });
+    CSSEditrWin.removeMenu();
     CSSEditrWin.openDevTools();
 });
 

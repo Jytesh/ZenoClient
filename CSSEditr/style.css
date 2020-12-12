@@ -2,6 +2,18 @@
     display: flex;
 }
 
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .codeWindow {
     height: 100vh;
+    width: 30vw;
+}
+
+.mainCode {
+    height: 100vh;
+    width: 30vw;
+    border: 1px solid black;
 }
