@@ -18,8 +18,8 @@ class Header {
 }
 
 class TextSetting {
-    constructor({label, inputLabel, inputId, buttonLabel, buttonId}, onClick, requireRestart) {
-        if(typeof onClick == "function"){
+    constructor({ label, inputLabel, inputId, buttonLabel, buttonId }, onClick, requireRestart) {
+        if (typeof onClick == "function") {
             this.onClick = onClick;
         } else {
             throw "onClick is not a valid function!";
@@ -47,8 +47,8 @@ class TextSetting {
 }
 
 class ToggleSetting {
-    constructor({label, buttonId, storeKey}, onToggle, requireRestart) {
-        if(typeof onToggle == "function"){
+    constructor({ label, buttonId, storeKey }, onToggle, requireRestart) {
+        if (typeof onToggle == "function") {
             this.onToggle = onToggle;
         } else {
             throw "onToggle is not a valid function!";
@@ -74,12 +74,12 @@ class ToggleSetting {
 }
 
 class ColorSetting extends ToggleSetting {
-    constructor () {
+    constructor() {
         let ret = super(...arguments);
         return ret;
     }
 
-    get html () {
+    get html() {
         let HTMLString = `<div class="settName">${this.label}${this.requireRestart ? "*" : ""}<input type="color" name="color" id="${this.buttonId}" style="float:right" value="${store.get(this.storeKey)}"></div>`;
         return HTMLString;
     }
@@ -91,7 +91,7 @@ class ColorSetting extends ToggleSetting {
 
 class ButtonSetting {
     constructor({ label, buttonLabel, buttonId }, onClick, requireRestart) {
-        if(typeof onClick == "function"){
+        if (typeof onClick == "function") {
             this.onClick = onClick;
         } else {
             throw "onClick is not a valid function!";
@@ -129,7 +129,7 @@ SettingsMap.set("ScoutModeToggle", new ToggleSetting({
     label: "Scout Mode",
     buttonId: "ScoutModeToggle_btn",
     storeKey: "ScoutMode",
-}, (checked) => { 
+}, (checked) => {
     store.set("ScoutMode", checked);
 
     let instructions = getID("instructions");
@@ -141,7 +141,7 @@ SettingsMap.set("ScoutModeToggle", new ToggleSetting({
 
     new MutationObserver(() => {
         let instruction = specBtn.checked ? "Click To Scout Lobby" : "Click To Play";
-        if(instructions.textContent.toLowerCase() == instruction.toLowerCase()) return;
+        if (instructions.textContent.toLowerCase() == instruction.toLowerCase()) return;
         instructions.innerHTML = instruction;
     }).observe(instructions, { childList: true });
 
@@ -160,13 +160,13 @@ SettingsMap.set("ZenoCSSToggle", new ToggleSetting({
     storeKey: "ZenoCSS",
 }, (checked) => {
     store.set("ZenoCSS", checked);
-    try {        
-        if(checked) {
+    try {
+        if (checked) {
             getID("custom-css").innerHTML = "";
         } else {
             getID("custom-css").innerHTML = window.customCSS;
         }
-    } catch (error) {console.log(error)}
+    } catch (error) { console.log(error) }
 }));
 
 //#endregion
@@ -221,17 +221,17 @@ SettingsMap.set("LinkTwitch", new TextSetting({
 
 //#region Float Button
 SettingsMap.set("FloatButtonToggle", new ToggleSetting({
-    label: "Show Float Button",
-    buttonId: "FloatButtonToggle_btn",
-    storeKey: "FloatButton"
-}, (checked) => {
-    if(!checked) {
-        document.getElementById("float-button-disable").innerHTML = `#ot-sdk-btn-floating.ot-floating-button {display: none !important;}`;
-    } else {
-        document.getElementById("float-button-disable").innerHTML = "";
-    }
-}))
-//#endregion
+        label: "Show Float Button",
+        buttonId: "FloatButtonToggle_btn",
+        storeKey: "FloatButton"
+    }, (checked) => {
+        if (!checked) {
+            document.getElementById("float-button-disable").innerHTML = `#ot-sdk-btn-floating.ot-floating-button {display: none !important;}`;
+        } else {
+            document.getElementById("float-button-disable").innerHTML = "";
+        }
+    }))
+    //#endregion
 
 //#region Clear Cache 
 SettingsMap.set("ClearCacheButton", new ButtonSetting({
@@ -322,14 +322,14 @@ SettingsMap.set("BadgesToggle", new ToggleSetting({
 
 //#region Chat Mute 
 SettingsMap.set("ChatMuteToggle", new ToggleSetting({
-    label: "Chat Mute Feature",
-    buttonId: "ChatMuteToggle_btn",
-    storeKey: "ChatMute"
-}, (checked) => {
-    store.set("ChatMute", checked);
-}, true))
-//#endregion
-//#endregion
+        label: "Chat Mute Feature",
+        buttonId: "ChatMuteToggle_btn",
+        storeKey: "ChatMute"
+    }, (checked) => {
+        store.set("ChatMute", checked);
+    }, true))
+    //#endregion
+    //#endregion
 
 //#region ----EXPERIMENTAL FEATURES----
 SettingsMap.set("ExperimentalHeader", new Header("Experimental"));
@@ -342,18 +342,18 @@ SettingsMap.set("InGameBadges", new ToggleSetting({
     requireRestart: false
 }, (checked) => {
     store.set("InGameBadges", checked);
-}, false))
+}, false));
 
 // sky color
 SettingsMap.set("SkyColor", new ColorSetting({
     label: "Sky Color",
     buttonId: "SkyColor_btn",
     storeKey: "SkyColor",
-}, function () {
+}, function() {
     setTimeout(() => {
         store.set("SkyColor", this.button.value);
     }, 0);
-}, true))
+}, true));
 
 // sky color toggle
 SettingsMap.set("SkyColorToggle", new ToggleSetting({
@@ -362,7 +362,21 @@ SettingsMap.set("SkyColorToggle", new ToggleSetting({
     storeKey: "SkyColorToggle",
 }, (checked) => {
     store.set("SkyColorToggle", checked);
-}, true))
+}, true));
+//#endregion
+
+//#region Editors
+
+SettingsMap.set("ExperimentalHeader", new Header("Editors"));
+
+SettingsMap.set("CSSEditr", new ButtonSetting({
+    label: "Open CSSEditr ( WIP )",
+    buttonLabel: "Open",
+    buttonId: "CSSEditr_btn"
+}, () => {
+    ipcRenderer.send("CSSEditr");
+}, true));
+
 //#endregion
 
 //#region Inserting Settings in the actual page
@@ -370,16 +384,16 @@ window.openZenoWindow = () => {
     openHostWindow();
 
     let settingsHTML = "";
-    for(let setting of SettingsMap.values()) {
+    for (let setting of SettingsMap.values()) {
         settingsHTML += setting.html + "\n";
     }
 
     getID('menuWindow').innerHTML = settingsHTML;
 
-    for (let setting of SettingsMap.values()){
-        if(!(setting instanceof Header)){
+    for (let setting of SettingsMap.values()) {
+        if (!(setting instanceof Header)) {
             setting.registerFunction();
         }
     }
-}
+};
 //#endregion

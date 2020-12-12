@@ -12,6 +12,7 @@ const path = require("path");
 const Store = require("electron-store");
 const store = new Store();
 var s;
+var isOnFocus = true;
 
 // *** Options ***
 const devTools = false;
@@ -23,7 +24,7 @@ try {
     VSync = store.get("VSync", false);
 } catch (err) {}
 
-if(!VSync){
+if (!VSync) {
     app.commandLine.appendSwitch("disable-frame-rate-limit");
     app.commandLine.appendSwitch("disable-gpu-vsync");
 }
@@ -93,9 +94,9 @@ app.whenReady().then(() => {
     //     const url = request.url.substr(basePath.length + 1);
     //     cb({ path: path.normalize(`${__dirname}/${url}`) });
     // });
-    
+
     // protocol.interceptFileProtocol('file', (_, cb) => { cb(null); });
-    
+
     // protocol.registerFileProtocol("zeno", (request, callback) => {
     //     const url = request.url.substr(7);
     //     console.log(path.normalize(url));
@@ -122,6 +123,25 @@ ipcMain.on("restart-client", () => {
     if (PopupWin) PopupWin.hide();
     app.relaunch();
     app.quit();
+});
+
+ipcMain.on("CSSEditr", () => {
+    win.close();
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    var CSSEditrWin = new BrowserWindow({
+        title: "Zeno CSS Editr",
+        icon: `${__dirname}/assets/icon/icon.ico`,
+        movable: true,
+        width,
+        height,
+        webPreferences: {
+            nodeIntergration: true,
+            preload: `${__dirname}/CSSEditr/main.js`,
+            webviewTag: true,
+        },
+    });
+    CSSEditrWin.loadFile(`${__dirname}/CSSEditr/index.html`);
+    CSSEditrWin.openDevTools();
 });
 
 ipcMain.on("close-client", () => {
@@ -201,7 +221,7 @@ function initMainWindow() {
             });
             globalShortcut.register("F7", () => {
                 newWin.webContents.openDevTools();
-            }); 
+            });
             if (!options.webContents) {
                 newWin.loadURL(url);
 
@@ -264,9 +284,13 @@ function initMainWindow() {
         console.log(win.getContentSize());
     })
 
-    win.on('close', () => {
+    win.on('closed', () => {
+        if (!isOnFocus) {
+            win = null;
+            return;
+        }
         app.quit();
-    })
+    });
     if (devTools) win.webContents.openDevTools();
     win.setSimpleFullScreen(fullscreenOnload);
     win.loadURL("https://krunker.io/");
@@ -300,7 +324,7 @@ function initSwapper() {
             } else {
                 if (!/\.(html|js)/g.test(file)) {
                     let k;
-                    if(/\.(mp3|css)/g.test(file)){
+                    if (/\.(mp3|css)/g.test(file)) {
                         k = "*://krunker.io" + filePath.replace(sf, "").replace(/\\/g, "/") + "*";
                     } else {
                         k = "*://assets.krunker.io" + filePath.replace(sf, "").replace(/\\/g, "/") + "*";
@@ -326,7 +350,7 @@ function initSwapper() {
                 console.log(`Swapping ${details.url} with ${s.files[details.url.replace(/https|http|(\?.*)|(#.*)/gi, "")]}`);
                 callback({
                     cancel: false,
-                    redirectURL: s.files[details.url.replace(/https|http|(\?.*)|(#.*)/gi, "")] ||details.url,
+                    redirectURL: s.files[details.url.replace(/https|http|(\?.*)|(#.*)/gi, "")] || details.url,
                 });
             }
         );

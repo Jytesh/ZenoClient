@@ -55,10 +55,9 @@ ipcRenderer.on("home", () => {
     window.location.href = "https://krunker.io/";
 });
 
-function tryModule(moduleName) {
-    const module = require("./featureModules/" + moduleName);
+var tryModule = (moduleName) => {
     try {
-        module();
+        require("./featureModules/" + moduleName)();
     } catch (err) {
         console.log(err)
     }
@@ -68,7 +67,7 @@ tryModule("inGameBadges");
 tryModule("sky");
 
 document.addEventListener("DOMContentLoaded", (event) => {
-    (function () {
+    (function() {
         "use strict";
 
         var insertCSS = () => {
@@ -179,7 +178,7 @@ ZenoEmitter.on(ZenoEvents.GAME_LOADED, () => {
     function getDirectories(path) {
         return fs
             .readdirSync(path)
-            .filter(function (file) {
+            .filter(function(file) {
                 return fs.statSync(path + "/" + file, (error, stat) => {
                     return stat.isDirectory();
                 });
@@ -313,7 +312,7 @@ window.rs = importCss = () => {
             copy(
                 files[i].path,
                 temp,
-                function (err) {
+                function(err) {
                     if (err) return console.log(err);
                     askRestart();
                 }
