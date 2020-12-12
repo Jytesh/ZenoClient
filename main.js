@@ -126,6 +126,7 @@ ipcMain.on("restart-client", () => {
 });
 
 ipcMain.on("CSSEditr", () => {
+    isOnFocus = false;
     win.close();
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     var CSSEditrWin = new BrowserWindow({

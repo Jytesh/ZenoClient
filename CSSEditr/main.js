@@ -1,4 +1,4 @@
-var view = getID('mainView');
-console.log(view.webContents);
+ window.PogU = function() {
+     var view = document.querySelector('webview');
 
-var getID = (id) => document.getElementById(id);
+ }
